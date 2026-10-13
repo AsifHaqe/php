@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Appointment;
@@ -11,21 +12,41 @@ use App\Models\Appointment;
 
 class HomeController extends Controller
 {
+    protected function isAdminUser($user): bool
+    {
+        return ((string) ($user->usertype ?? '0')) === '1'
+            || strtolower((string) ($user->email ?? '')) === 'admin@hospital.com';
+    }
+
     public function redirect()
     {
-        if (Auth::check()) {
-            if (Auth::user()->usertype == '1') {
-                return view('admin.home');
-            }
-
-            $doctors = Doctor::all();
-            return view('dashboard', compact('doctors'));
+        if (! Auth::check()) {
+            return redirect()->route('login');
         }
 
-        return redirect()->route('login');
+        if ($this->isAdminUser(Auth::user())) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        $doctors = Schema::hasTable('doctors') ? Doctor::all() : collect();
+        return view('dashboard', compact('doctors'));
     }
+
+    public function adminDashboard()
+    {
+        if (! Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        if (! $this->isAdminUser(Auth::user())) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('admin.home');
+    }
+
     public function index(){
-        $doctors = User::where('usertype', '0')->get();
+        $doctors = Schema::hasTable('users') ? User::where('usertype', '0')->get() : collect();
         return view('dashboard', compact('doctors'));
     }
     //Appointment function

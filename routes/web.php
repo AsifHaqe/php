@@ -47,11 +47,10 @@ Route::post('/edit_doctor/{id}', [AdminController::class, 'editDoctor'])->name('
 //cancel appointment
 Route::get('/cancel-appointment/{id}', [HomeController::class, 'cancelAppointment'])->name('cancel-appointment');
 
-Route::get('home', [HomeController::class, 'index'])->name('home');
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified',
 ])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'redirect'])->name('dashboard');
+    Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name('admin.dashboard');
 });
