@@ -108,19 +108,25 @@
             @endif
 
 
-
           </ul>
         </div> <!-- .navbar-collapse -->
       </div> <!-- .container -->
     </nav>
   </header>
     <div align = "center" style = "padding:100px;">
+        @if(session()->has('message'))
+            <div class="alert alert-success">{{ session()->get('message') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-danger">{{ $errors->first() }}</div>
+        @endif
         <table>
             <tr style = "background-color:gray;">
                 <th style = "padding:10px; font-size:16px; color:white">Doctor Name</th>
                 <th style = "padding:10px; font-size:16px; color:white">Date</th>
                 <th style = "padding:10px; font-size:16px; color:white">Message</th>
                 <th style = "padding:10px; font-size:16px; color:white">Status</th>
+                <th style = "padding:10px; font-size:16px; color:white">Verified Review</th>
                 <th style = "padding:10px; font-size:16px; color:white">Cancel Appointment</th>
             </tr>
 
@@ -130,7 +136,37 @@
                 <td>{{$appoints->date}}</td>
                 <td>{{$appoints->message}}</td>
                 <td>{{$appoints->status}}</td>
-                <td><a class = "btn btn-danger" onclick="return confirm('Are you sure you want to cancel this appointment?')" href="{{ route('cancel-appointment', ['id' => $appoints->id]) }}">Cancel</a></td>
+                <td>
+                    @if($appoints->review)
+                        <strong>{{ $appoints->review->rating }} / 5</strong>
+                        @if($appoints->review->review)
+                            <p>{{ $appoints->review->review }}</p>
+                        @endif
+                    @elseif(strtolower($appoints->status) === 'completed' && $appoints->doctor_id)
+                        <form method="POST" action="{{ route('appointments.review', $appoints->id) }}">
+                            @csrf
+                            <label for="rating-{{ $appoints->id }}">Rating</label>
+                            <select id="rating-{{ $appoints->id }}" name="rating" required>
+                                <option value="">Choose</option>
+                                @for($rating = 5; $rating >= 1; $rating--)
+                                    <option value="{{ $rating }}">{{ $rating }} / 5</option>
+                                @endfor
+                            </select>
+                            <textarea name="review" maxlength="1000" placeholder="Optional review"></textarea>
+                            <button class="btn btn-primary" type="submit">Submit verified review</button>
+                        </form>
+                    @else
+                        <span>Available after a completed appointment</span>
+                    @endif
+                </td>
+                <td>
+                    @if(strtolower($appoints->status) !== 'completed')
+                        <form method="POST" action="{{ route('cancel-appointment', ['id' => $appoints->id]) }}" onsubmit="return confirm('Are you sure you want to cancel this appointment?')">
+                            @csrf
+                            <button class="btn btn-danger" type="submit">Cancel</button>
+                        </form>
+                    @endif
+                </td>
             </tr>
             @endforeach
 
