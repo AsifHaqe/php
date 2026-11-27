@@ -43,6 +43,13 @@
             <div class = "container-fluid page-body-wrapper">
 
                 <div class = "container" align = "center" style = "padding:100px">
+                    @if($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        @foreach($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                    @endif
                     @if(session()->has('message'))
                     <div class = "alert alert-success" style="max-width: 500px; margin-bottom: 20px;">
                         <button type = "button" class = "close" data-dismiss="alert">
@@ -68,6 +75,28 @@
                         <div style = "padding:20px;">
                             <label>Room Number</label>
                             <input type = "text" name = "room_number" style = "color: black;" value = "{{$doctor->room_number}}" required>
+                        </div>
+                        <div style = "padding:20px;">
+                            <label>Clinic Address</label>
+                            <input type="text" name="clinic_address" style="color: black;" value="{{ old('clinic_address', $doctor->clinic_address) }}" required>
+                        </div>
+                        <div style = "padding:20px;">
+                            <label>Latitude</label>
+                            <input type="number" name="latitude" step="any" min="-90" max="90" style="color: black;" value="{{ old('latitude', $doctor->latitude) }}" required>
+                        </div>
+                        <div style = "padding:20px;">
+                            <label>Longitude</label>
+                            <input type="number" name="longitude" step="any" min="-180" max="180" style="color: black;" value="{{ old('longitude', $doctor->longitude) }}" required>
+                        </div>
+                        <div style = "padding:20px;">
+                            <label>Credentials verified</label>
+                            <input type="hidden" name="credentials_verified" value="0">
+                            <input type="checkbox" name="credentials_verified" value="1" @checked((bool) old('credentials_verified', $doctor->credentials_verified))>
+                        </div>
+                        <div style = "padding:20px;">
+                            <label>Available for appointments</label>
+                            <input type="hidden" name="available" value="0">
+                            <input type="checkbox" name="available" value="1" @checked((bool) old('available', $doctor->available))>
                         </div>
                         <div style = "padding:20px;">
                             <label>Current Image</label>

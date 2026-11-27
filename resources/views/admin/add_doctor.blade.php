@@ -46,6 +46,13 @@
 
          
           <div class = "container" align = "center" style = "padding-top:100px;">
+            @if($errors->any())
+              <div class="alert alert-danger" role="alert">
+                @foreach($errors->all() as $error)
+                  <div>{{ $error }}</div>
+                @endforeach
+              </div>
+            @endif
             @if(session()->has('message'))
          <div class = "alert alert-success">
           <button type = "button" class = "close" data-dismiss="alert">
@@ -59,31 +66,60 @@
               @csrf
               <div style = "padding:20px;">
                 <label>Doctor Name</label>
-                <input type="text" name = "doctor_name" style = "color:black"placeholder="Enter doctor name"required = "">
+                <input type="text" name="doctor_name" style="color:black" placeholder="Enter doctor name" value="{{ old('doctor_name') }}" required>
 
               </div>
 
               <div style = "padding:20px;">
                 <label>Phone</label>
-                <input type="number" name = "phone" style = "color:black"placeholder="Enter doctor phone number"required>
+                <input type="tel" name="phone" style="color:black" placeholder="Enter doctor phone number" value="{{ old('phone') }}" required>
 
               </div>
               <div style = "padding:20px;">
                 <label>Speciality</label>
                 <select name = "speciality" style = "color:black; width:200px;">
-                  <option>--seect--</option>
-                  <option value = "skin">Skin</option>
-                  <option value = "heart">Heart</option>
-                  <option value = "brain">Brain</option>
-                  <option value = "bone">Bone</option>
+                  <option value="">--select--</option>
+                  <option value="skin" @selected(old('speciality') === 'skin')>Skin</option>
+                  <option value="heart" @selected(old('speciality') === 'heart')>Heart</option>
+                  <option value="brain" @selected(old('speciality') === 'brain')>Brain</option>
+                  <option value="bone" @selected(old('speciality') === 'bone')>Bone</option>
                 </select>
 
               </div>
               <div style = "padding:20px;">
                 <label>Room Number</label>
-                <input type="number" name = "room_number" style = "color:black"placeholder="Enter room number"required>
+                <input type="number" name="room_number" style="color:black" placeholder="Enter room number" value="{{ old('room_number') }}" required>
 
               </div>
+
+              <div style = "padding:20px;">
+                <label>Clinic Address</label>
+                <input type="text" name="clinic_address" style="color:black" placeholder="Enter clinic address" value="{{ old('clinic_address') }}" required>
+              </div>
+
+              <div style = "padding:20px;">
+                <label>Latitude</label>
+                <input type="number" name="latitude" step="any" min="-90" max="90" style="color:black" placeholder="e.g. 23.8103" value="{{ old('latitude') }}" required>
+              </div>
+
+              <div style = "padding:20px;">
+                <label>Longitude</label>
+                <input type="number" name="longitude" step="any" min="-180" max="180" style="color:black" placeholder="e.g. 90.4125" value="{{ old('longitude') }}" required>
+                <small>Enter the clinic's decimal coordinates from its map pin.</small>
+              </div>
+
+              <div style = "padding:20px;">
+                <label>Credentials verified</label>
+                <input type="hidden" name="credentials_verified" value="0">
+                <input type="checkbox" name="credentials_verified" value="1">
+              </div>
+
+              <div style = "padding:20px;">
+                <label>Available for appointments</label>
+                <input type="hidden" name="available" value="0">
+                <input type="checkbox" name="available" value="1" checked>
+              </div>
+
               <div style = "padding:20px;">
                 <label>Doctor image</label>
                 <input type="file" name = "doctor_image" style = "color:white"required>

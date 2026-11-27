@@ -57,3 +57,17 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Nearby doctor recommendations
+
+Run the database migrations to add doctor coordinates, credential-verification status, availability, appointment links, and verified reviews:
+
+```powershell
+php artisan migrate
+```
+
+In the admin panel, update each doctor with the clinic's address and decimal latitude/longitude. Mark credentials verified only after checking them, and keep availability current. Recommendations use browser location with permission, include only verified and available doctors within 25 km, and sort by distance (verified patient ratings break ties). The patient's precise coordinates are used for that search only and are not stored. The location feature requires localhost or HTTPS.
+
+To enable Gemini explanations, set `GEMINI_API_KEY` in the local `.env` file. The default model is `gemini-3.5-flash-lite`; `GEMINI_MODEL` can override it. Keep the key private and never commit it. Gemini receives only shortlisted doctors' names, approximate distances, and verified-review aggregates—not the patient's coordinates, selected specialty, account details, or health information. The application filters and ranks results locally; Gemini only explains the already-filtered matches and cannot add doctors. Results remain available if Gemini is unavailable.
+
+Patients must be logged in when booking for an appointment to be linked to their account. After an admin approves and marks that appointment completed, the patient can submit one verified review for that doctor.

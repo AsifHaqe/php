@@ -126,18 +126,82 @@
          </div>
          @endif
 
-  <div class="page-hero bg-image overlay-dark" style="background-image: url(../assets/img/bg_image_1.jpg);">
-    <div class="hero-section">
-      <div class="container text-center wow zoomIn">
-        <span class="subhead">Let's make your life happier</span>
-        <h1 class="display-4">Healthy Living</h1>
-        <a href="#" class="btn btn-primary">Let's Consult</a>
+  <section class="page-hero home-hero">
+    <div class="container home-hero-inner">
+      <div class="home-hero-copy wow fadeInLeft">
+        <span class="home-hero-eyebrow"><span></span> ONE HEALTH · YOUR CARE, CONNECTED</span>
+        <h1>Better care,<br><span>closer to home.</span></h1>
+        <p>Find the right doctor and take the next step in your health journey with care that puts you first.</p>
+        <div class="home-hero-actions">
+          <a href="#appointment" class="home-hero-button">Book an appointment <span aria-hidden="true">→</span></a>
+          <a href="#find-doctor" class="home-hero-link">Find nearby doctors</a>
+        </div>
+        <div class="home-hero-note"><span aria-hidden="true">✓</span> A simpler way to manage your care</div>
+      </div>
+
+      <div class="home-hero-art wow fadeInRight" aria-hidden="true">
+        <div class="home-hero-glow"></div>
+        <div class="home-orbit home-orbit-back"></div>
+        <div class="home-orbit home-orbit-front"></div>
+        <div class="home-plus home-plus-one">+</div>
+        <div class="home-plus home-plus-two">+</div>
+        <div class="home-care-card">
+          <div class="home-care-card-top">
+            <span class="home-card-mark">+</span>
+            <span>ONE HEALTH</span>
+            <span class="home-card-menu">•••</span>
+          </div>
+          <div class="home-care-illustration">
+            <div class="home-care-ring"></div>
+            <div class="home-care-cross"><span></span><i></i></div>
+            <div class="home-care-orb"></div>
+          </div>
+          <div class="home-card-caption">
+            <strong>Your health, in focus</strong>
+            <span>Care starts with a conversation</span>
+          </div>
+          <div class="home-card-progress"><span></span></div>
+        </div>
+        <div class="home-floating-card">
+          <span class="home-floating-icon">+</span>
+          <span><strong>Here when you need us</strong><small>Explore care with One Health</small></span>
+        </div>
+        <div class="home-hero-platform"></div>
       </div>
     </div>
-  </div>
+    <a class="home-hero-scroll" href="#services"><span></span> Explore care</a>
+  </section>
 
+  <section class="doctor-finder" id="find-doctor">
+    <div class="container">
+      <div class="doctor-finder-card">
+        <div class="doctor-finder-copy">
+          <span class="doctor-finder-eyebrow">PERSONALIZED TO YOUR AREA</span>
+          <h2>Find care near you</h2>
+          <p>We’ll look for available doctors with verified credentials within 25 km of your location.</p>
+        </div>
+        <form id="doctor-recommendation-form" method="POST" action="{{ route('doctor-recommendations') }}">
+          @csrf
+          <input type="hidden" name="latitude" id="recommendation-latitude">
+          <input type="hidden" name="longitude" id="recommendation-longitude">
+          <label for="recommendation-speciality">Specialty <span>(optional)</span></label>
+          <select name="speciality" id="recommendation-speciality" class="form-control">
+            <option value="">Any specialty</option>
+            @foreach($doctors->pluck('speciality')->filter()->unique()->sort() as $speciality)
+              <option value="{{ $speciality }}">{{ ucfirst($speciality) }}</option>
+            @endforeach
+          </select>
+          <button type="submit" id="doctor-recommendation-submit" class="doctor-finder-button">
+            Use my location <span aria-hidden="true">→</span>
+          </button>
+          <p id="doctor-location-status" class="doctor-location-status" role="status" aria-live="polite"></p>
+          <p class="doctor-location-privacy">Your precise location is used for this search only and is not saved. Gemini receives shortlisted doctors' names, approximate distances, and review summaries—not your coordinates, selected specialty, account, or health details.</p>
+        </form>
+      </div>
+    </div>
+  </section>
 
-  <div class="bg-light">
+  <div class="bg-light" id="services">
     <div class="page-section py-3 mt-md-n5 custom-index">
       <div class="container">
         <div class="row justify-content-center">
@@ -272,6 +336,43 @@
 <script src="../assets/vendor/wow/wow.min.js"></script>
 
 <script src="../assets/js/theme.js"></script>
+
+<script>
+  (function () {
+    const form = document.getElementById('doctor-recommendation-form');
+    if (!form) return;
+
+    const latitude = document.getElementById('recommendation-latitude');
+    const longitude = document.getElementById('recommendation-longitude');
+    const button = document.getElementById('doctor-recommendation-submit');
+    const status = document.getElementById('doctor-location-status');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      if (!navigator.geolocation) {
+        status.textContent = 'This browser does not support location access. Try a current browser on localhost or HTTPS.';
+        return;
+      }
+
+      button.disabled = true;
+      status.textContent = 'Requesting your location…';
+
+      navigator.geolocation.getCurrentPosition(function (position) {
+        latitude.value = position.coords.latitude;
+        longitude.value = position.coords.longitude;
+        form.submit();
+      }, function () {
+        button.disabled = false;
+        status.textContent = 'Location was not available. Allow location access in your browser and try again.';
+      }, {
+        enableHighAccuracy: false,
+        maximumAge: 300000,
+        timeout: 10000
+      });
+    });
+  })();
+</script>
   
 </body>
 </html>

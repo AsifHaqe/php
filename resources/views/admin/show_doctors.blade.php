@@ -53,7 +53,10 @@
                         <td style = "padding:10px;">{{$doctor->room_number}}</td>
                         <td><img height="100" width="100" src="doctorimage/{{$doctor->doctor_image}}"></td>
                         <td>
-                            <a onclick = "return confirm('Are you sure you want to delete this doctor?')" class = "btn btn-danger" href="{{url('delete_doctor', $doctor->id)}}">Delete</a>
+                            <form method="POST" action="{{ route('delete_doctor', $doctor->id) }}" onsubmit="return confirm('Are you sure you want to delete this doctor?')">
+                                @csrf
+                                <button class="btn btn-danger" type="submit">Delete</button>
+                            </form>
                         </td>
                         <td>
                             <a class = "btn btn-primary" href="{{url('update_doctor', $doctor->id)}}">Update</a>

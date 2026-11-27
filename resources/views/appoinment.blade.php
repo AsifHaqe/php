@@ -1,6 +1,14 @@
-  <div class="page-section">
+  <div class="page-section" id="appointment">
     <div class="container">
       <h1 class="text-center wow fadeInUp">Make an Appointment</h1>
+
+      @if($errors->any())
+        <div class="alert alert-danger" role="alert">
+          @foreach($errors->all() as $error)
+            <div>{{ $error }}</div>
+          @endforeach
+        </div>
+      @endif
 
       <form class="main-form" method = "POST" action="{{url('appointment')}}">
         @csrf
@@ -19,8 +27,8 @@
 
 
               <option value="">Select Doctor</option>
-              @foreach($doctors as $doctor)
-              <option value="{{ $doctor->name }}">{{ $doctor->name }}---Speciality---{{ $doctor->speciality }}</option>
+              @foreach($doctors->where('available', true) as $doctor)
+              <option value="{{ $doctor->id }}" @selected((string) old('doctor_id', request('doctor_id')) === (string) $doctor->id)>{{ $doctor->name }}---Speciality---{{ $doctor->speciality }}</option>
               @endforeach
 
 
